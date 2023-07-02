@@ -36,6 +36,7 @@ const ejecutarAgendarGlobal = async () => {
             "Content-Type": "application/json",
           },
           data: JSON.stringify({
+            id: schedules._id,
             password: schedules.password,
             dni: schedules.dni,
             office: office.id,
@@ -56,8 +57,8 @@ const ejecutarAgendarGlobal = async () => {
 cron.schedule("*/5 * * * * *", async function () {
   //ejecutarAgendarChile('V5781580', 'Lrlm1157', '2023', '9')
   //ejecutarAgendarChile('V27198131', 'Saime123', '2023', '9')
-  //ejecutarAgendarChile('V26746593', 'Saime321', '2023', '9')
-  //ejecutarAgendarChile('V26746593', 'Saime321', '2023', '8')
+  // ejecutarAgendarChile('V26746593', 'Saime321', '2023', '9')
+  // ejecutarAgendarChile('V26746593', 'Saime321', '2023', '8')
   ejecutarAgendarGlobal()
 });
 
