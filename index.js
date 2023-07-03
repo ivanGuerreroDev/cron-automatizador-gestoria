@@ -54,12 +54,12 @@ const ejecutarAgendarGlobal = async () => {
   }
 }
 
-cron.schedule("*/5 * * * * *", async function () {
+cron.schedule("*/1 * * * * *", async function () {
   //ejecutarAgendarChile('V5781580', 'Lrlm1157', '2023', '9')
   //ejecutarAgendarChile('V27198131', 'Saime123', '2023', '9')
-  // ejecutarAgendarChile('V26746593', 'Saime321', '2023', '9')
-  // ejecutarAgendarChile('V26746593', 'Saime321', '2023', '8')
-  ejecutarAgendarGlobal()
+  ejecutarAgendarChile('V26746593', 'Saime123', '2023', '9')
+  ejecutarAgendarChile('V26746593', 'Saime123', '2023', '8')
+  // ejecutarAgendarGlobal()
 });
 
 app.listen(3128);
