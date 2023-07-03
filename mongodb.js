@@ -1,6 +1,6 @@
 const mongo = require('mongodb')
 const {MongoClient} = mongo
-const uri = 'mongodb://mongo:nyPsqAJNP266McbQUd6v@containers-us-west-53.railway.app:5693'
+const uri = 'mongodb://localhost:27017'
 const NODE_ENV = 'development'
 const options = {}
 

@@ -29,6 +29,7 @@ const ejecutarAgendarGlobal = async () => {
   if (trxs) {
     trxs.forEach(schedules => {
       schedules?.offices?.forEach(office => {
+        console.log("Cedula: " + schedules.dni + " Oficina: " + office.name + " Dates: ");
         const config = {
           method: 'post',
           url: `${HOST_URL}/api/agendarCitasGlobal`,
@@ -54,7 +55,7 @@ const ejecutarAgendarGlobal = async () => {
   }
 }
 
-cron.schedule("*/1 * * * * *", async function () {
+cron.schedule("*/3 * * * * *", async function () {
   //ejecutarAgendarChile('V5781580', 'Lrlm1157', '2023', '9')
   //ejecutarAgendarChile('V27198131', 'Saime123', '2023', '9')
   //ejecutarAgendarChile('V26746593', 'Saime123', '2023', '9')
