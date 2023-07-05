@@ -99,7 +99,7 @@ cron.schedule(CRON_STR, async function () {
   const current = new Date();
   const newQuotaStart = parse(newQuotaStartTime.value, 'HH:mm', current);
   let newQuotaEnd = parse(newQuotaStartTime.value, 'HH:mm', current);
-  switch (newQuotaDurationType) {
+  switch (newQuotaDurationType.value) {
     case 'HOURS':
       newQuotaEnd = addHours(newQuotaEnd, newQuotaDuration.value);
       break;
@@ -111,7 +111,7 @@ cron.schedule(CRON_STR, async function () {
   }
   if (current >= newQuotaStart && current <= newQuotaEnd) {
     console.log("New Quota Start: " + newQuotaStart + " End: " + newQuotaEnd);
-    cronsObj.newQuota = cron.schedule(newQuotaCronStr, execNewQuotas, { scheduled: true })
+    cronsObj.newQuota = cron.schedule(newQuotaCronStr.value, execNewQuotas, { scheduled: true })
     cronsObj.newQuota.start();
   } else {
     console.log("New Quota stopped");
@@ -125,7 +125,7 @@ cron.schedule(CRON_STR, async function () {
     }).toArray();
   if (trxs) {
     console.log("Find Schedules started - finded " + trxs.length + " trxs");
-    cronsObj.findSchedules = cron.schedule(findSchedulesCronStr, execFindSchedules, { scheduled: true })
+    cronsObj.findSchedules = cron.schedule(findSchedulesCronStr.value, execFindSchedules, { scheduled: true })
     cronsObj.findSchedules.start();
   } else {
     console.log("Find Schedules stopped");
