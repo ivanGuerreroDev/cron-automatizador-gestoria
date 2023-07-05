@@ -1,6 +1,6 @@
 const mongo = require('mongodb')
 const {MongoClient} = mongo
-const uri = 'mongodb://localhost:27017'
+const uri = process.env.MONGO_URL
 const NODE_ENV = 'development'
 const options = {}
 
