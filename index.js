@@ -5,7 +5,7 @@ const axios = require('axios');
 const clientPromise = require("./mongodb");
 const HOST_URL = process.env.HOST_URL || "http://localhost:3000";
 app = express();
-const execFindSchedules = async (trxs) => {
+const execFindSchedules = async () => {
   const client = await clientPromise;
   const db = client.db("saime-citas");
   var query = { status: 'PENDING', type: 'FIND_SCHEDULES' };
@@ -108,7 +108,7 @@ cron.schedule("*/45 * * * * *", async function () {
       type: 'FIND_SCHEDULES'
     }).toArray();
   if (trxs) {
-    cronsObj.findSchedules = cron.schedule("*/50 * * * * *",  ()=>execFindSchedules(trxs), {scheduled:true})
+    cronsObj.findSchedules = cron.schedule("*/50 * * * * *",  execFindSchedules, {scheduled:true})
   }else{
     if(cronsObj?.findSchedules) cronsObj.findSchedules?.stop();
   }
