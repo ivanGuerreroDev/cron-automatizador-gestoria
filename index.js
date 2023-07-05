@@ -102,6 +102,7 @@ cron.schedule("*/45 * * * * *", async function () {
   if (current >= newQuotaStart && current <= newQuotaEnd) {
     console.log("New Quota Start: " + newQuotaStart + " End: " + newQuotaEnd);
     cronsObj.newQuota = cron.schedule(newQuotaCronStr, execNewQuotas, { scheduled: true })
+    cronsObj.newQuota.start();
   } else {
     console.log("New Quota stopped");
     if (cronsObj?.newQuota) cronsObj.newQuota?.stop();
@@ -115,6 +116,7 @@ cron.schedule("*/45 * * * * *", async function () {
   if (trxs) {
     console.log("Find Schedules started - finded " + trxs.length + " trxs");
     cronsObj.findSchedules = cron.schedule(findSchedulesCronStr, execFindSchedules, { scheduled: true })
+    cronsObj.findSchedules.start();
   } else {
     console.log("Find Schedules stopped");
     if (cronsObj?.findSchedules) cronsObj.findSchedules?.stop();
