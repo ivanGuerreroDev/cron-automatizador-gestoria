@@ -12,6 +12,7 @@ const execFindSchedules = async () => {
   const trxs = await db
     .collection("trxs")
     .find(query).toArray();
+  console.log("Find Schedules - Trxs: " + trxs?.length);
   if (trxs?.length > 0) {
     trxs.forEach(schedules => {
       schedules?.offices?.forEach(office => {
@@ -47,7 +48,7 @@ const execNewQuotas = async () => {
   const trxs = await db
     .collection("trxs")
     .find(query).toArray();
-  if (trxs) {
+  if (trxs?.length > 0) {
     trxs.forEach(schedules => {
       schedules?.offices?.forEach(office => {
         const config = {
@@ -77,6 +78,7 @@ const execNewQuotas = async () => {
 const cronsObj = {}
 
 cron.schedule("*/45 * * * * *", async function () {
+  console.log("running a this task every 45 seconds")
   const client = await clientPromise;
   const db = client.db("saime-citas");
   const findSchedulesCronStr = await db.collection("settings").findOne({ key: 'findSchedulesCronStr' });
@@ -98,8 +100,10 @@ cron.schedule("*/45 * * * * *", async function () {
       break;
   }
   if (current >= newQuotaStart && current <= newQuotaEnd) {
+    console.log("New Quota Start: " + newQuotaStart + " End: " + newQuotaEnd);
     cronsObj.newQuota = cron.schedule(newQuotaCronStr, execNewQuotas, { scheduled: true })
   } else {
+    console.log("New Quota stopped");
     if (cronsObj?.newQuota) cronsObj.newQuota?.stop();
   }
   const trxs = await db
@@ -109,8 +113,10 @@ cron.schedule("*/45 * * * * *", async function () {
       type: 'FIND_SCHEDULES'
     }).toArray();
   if (trxs) {
+    console.log("Find Schedules started - finded " + trxs.length + " trxs");
     cronsObj.findSchedules = cron.schedule(findSchedulesCronStr, execFindSchedules, { scheduled: true })
   } else {
+    console.log("Find Schedules stopped");
     if (cronsObj?.findSchedules) cronsObj.findSchedules?.stop();
   }
 });
