@@ -4,6 +4,7 @@ const { parse, addHours, addMinutes } = require("date-fns");
 const axios = require('axios');
 const clientPromise = require("./mongodb");
 const HOST_URL = process.env.HOST_URL || "http://localhost:3000";
+const CRON_STR = process.env.CRON_STR || '*/30 * * * *'
 app = express();
 
 const execFindSchedules = async () => {
@@ -86,8 +87,8 @@ const execNewQuotas = async () => {
 }
 const cronsObj = {}
 
-cron.schedule("*/45 * * * * *", async function () {
-  console.log("running a this task every 45 seconds")
+cron.schedule(CRON_STR, async function () {
+  console.log("running a task")
   const client = await clientPromise;
   const db = client.db("saime-citas");
   const findSchedulesCronStr = await db.collection("settings").findOne({ key: 'findSchedulesCronStr' });
