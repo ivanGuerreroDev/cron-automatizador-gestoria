@@ -109,6 +109,8 @@ cron.schedule(CRON_STR, async function () {
     default:
       break;
   }
+  console.log("@@ current ", current)
+  console.log("@@addDays(addMonths(current, newQuotaHowMany), 1 ", addDays(addMonths(current, newQuotaHowMany), 1))
   if (current >= newQuotaStart && current <= newQuotaEnd) {
     console.log("New Quota Start: " + newQuotaStart + " End: " + newQuotaEnd);
     cronsObj.newQuota = cron.schedule(newQuotaCronStr.value, execNewQuotas, { scheduled: true })
