@@ -16,6 +16,7 @@ const execFindSchedules = async () => {
   if (trxs?.length > 0) {
     trxs.forEach(schedules => {
       schedules?.offices?.forEach(office => {
+        console.log("execFindSchedules Cedula: " + schedules.dni + " Oficina: " + office.name + " Dates: " + schedules.dates[0] + "-" + schedules.dates[schedules.dates.length - 1]);
         const config = {
           method: 'post',
           url: `${HOST_URL}/api/agendarCitasGlobal`,
@@ -32,10 +33,9 @@ const execFindSchedules = async () => {
         }
         axios(config)
           .then(function (response) {
-            console.log("execFindSchedules Cedula: " + schedules.dni + " Oficina: " + office.name + " Dates: " + schedules.dates[0] + "-" + schedules.dates[schedules.dates.length - 1]);
-            console.log(response.data);
+            console.log(schedules.dni+" "+response.data);
           }).catch(function (error) {
-            console.error(error);
+            console.log(error);
           });
       })
     })
@@ -64,12 +64,12 @@ const execNewQuotas = async () => {
             office: office.id,
           })
         }
+        console.log("New Quota Cedula: " + schedules.dni + " Oficina: " + office.name);
         axios(config)
           .then(function (response) {
-            console.log("New Quota Cedula: " + schedules.dni + " Oficina: " + office.name);
-            console.log(response.data);
+            console.log(schedules.dni+" "+response.data);
           }).catch(function (error) {
-            console.error(error);
+            console.log(error);
           });
       })
     })
