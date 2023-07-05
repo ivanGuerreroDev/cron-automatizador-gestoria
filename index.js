@@ -5,74 +5,83 @@ const axios = require('axios');
 const clientPromise = require("./mongodb");
 const HOST_URL = process.env.HOST_URL || "http://localhost:3000";
 app = express();
+
 const execFindSchedules = async () => {
-  const client = await clientPromise;
-  const db = client.db("saime-citas");
-  var query = { status: 'PENDING', type: 'FIND_SCHEDULES' };
-  const trxs = await db
-    .collection("trxs")
-    .find(query).toArray();
-  console.log("Find Schedules - Trxs: " + trxs?.length);
-  if (trxs?.length > 0) {
-    trxs.forEach(schedules => {
-      schedules?.offices?.forEach(office => {
-        console.log("execFindSchedules Cedula: " + schedules.dni + " Oficina: " + office.name + " Dates: " + schedules.dates[0] + "-" + schedules.dates[schedules.dates.length - 1]);
-        const config = {
-          method: 'post',
-          url: `${HOST_URL}/api/agendarCitasGlobal`,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          data: JSON.stringify({
-            id: schedules._id,
-            password: schedules.password,
-            dni: schedules.dni,
-            office: office.id,
-            dates: schedules.dates,
-          })
-        }
-        axios(config)
-          .then(function (response) {
-            console.log(schedules.dni+" "+response.data);
-          }).catch(function (error) {
-            console.log(error);
-          });
+  try {
+    const client = await clientPromise;
+    const db = client.db("saime-citas");
+    var query = { status: 'PENDING', type: 'FIND_SCHEDULES' };
+    const trxs = await db
+      .collection("trxs")
+      .find(query).toArray();
+    console.log("Find Schedules - Trxs: " + trxs?.length);
+    if (trxs?.length > 0) {
+      trxs.forEach(schedules => {
+        schedules?.offices?.forEach(office => {
+          console.log("execFindSchedules Cedula: " + schedules.dni + " Oficina: " + office.name + " Dates: " + schedules.dates[0] + "-" + schedules.dates[schedules.dates.length - 1]);
+          const config = {
+            method: 'post',
+            url: `${HOST_URL}/api/agendarCitasGlobal`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            data: JSON.stringify({
+              id: schedules._id,
+              password: schedules.password,
+              dni: schedules.dni,
+              office: office.id,
+              dates: schedules.dates,
+            })
+          }
+          axios(config)
+            .then(function (response) {
+              console.log(schedules.dni + " " + response.data);
+            }).catch(function (error) {
+              console.log(error);
+            });
+        })
       })
-    })
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 const execNewQuotas = async () => {
-  const client = await clientPromise;
-  const db = client.db("saime-citas");
-  var query = { status: 'PENDING', type: 'NEW_QUOTA' };
-  const trxs = await db
-    .collection("trxs")
-    .find(query).toArray();
-  if (trxs?.length > 0) {
-    trxs.forEach(schedules => {
-      schedules?.offices?.forEach(office => {
-        const config = {
-          method: 'post',
-          url: `${HOST_URL}/api/newQuota`,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          data: JSON.stringify({
-            id: schedules._id,
-            password: schedules.password,
-            dni: schedules.dni,
-            office: office.id,
-          })
-        }
-        console.log("New Quota Cedula: " + schedules.dni + " Oficina: " + office.name);
-        axios(config)
-          .then(function (response) {
-            console.log(schedules.dni+" "+response.data);
-          }).catch(function (error) {
-            console.log(error);
-          });
+  try {
+    const client = await clientPromise;
+    const db = client.db("saime-citas");
+    var query = { status: 'PENDING', type: 'NEW_QUOTA' };
+    const trxs = await db
+      .collection("trxs")
+      .find(query).toArray();
+    if (trxs?.length > 0) {
+      trxs.forEach(schedules => {
+        schedules?.offices?.forEach(office => {
+          const config = {
+            method: 'post',
+            url: `${HOST_URL}/api/newQuota`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            data: JSON.stringify({
+              id: schedules._id,
+              password: schedules.password,
+              dni: schedules.dni,
+              office: office.id,
+            })
+          }
+          console.log("New Quota Cedula: " + schedules.dni + " Oficina: " + office.name);
+          axios(config)
+            .then(function (response) {
+              console.log(schedules.dni + " " + response.data);
+            }).catch(function (error) {
+              console.log(error);
+            });
+        })
       })
-    })
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 const cronsObj = {}
