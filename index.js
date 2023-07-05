@@ -79,6 +79,7 @@ const cronsObj = {}
 cron.schedule("*/45 * * * * *", async function () {
   const client = await clientPromise;
   const db = client.db("saime-citas");
+  const findSchedulesCronStr = await db.collection("settings").findOne({ key: 'findSchedulesCronStr' });
   const newQuotaCronStr = await db.collection("settings").findOne({ key: 'newQuotaCronStr' });
   const newQuotaStartTime = await db.collection("settings").findOne({ key: 'newQuotaStartTime' });
   const newQuotaDuration = await db.collection("settings").findOne({ key: 'newQuotaDuration' });
@@ -108,7 +109,7 @@ cron.schedule("*/45 * * * * *", async function () {
       type: 'FIND_SCHEDULES'
     }).toArray();
   if (trxs) {
-    cronsObj.findSchedules = cron.schedule("*/50 * * * * *",  execFindSchedules, {scheduled:true})
+    cronsObj.findSchedules = cron.schedule(findSchedulesCronStr,  execFindSchedules, {scheduled:true})
   }else{
     if(cronsObj?.findSchedules) cronsObj.findSchedules?.stop();
   }
