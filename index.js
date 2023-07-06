@@ -112,6 +112,7 @@ cron.schedule(CRON_STR, async function () {
     console.log("newQuotaEnd", format(newQuotaEnd, 'dd/MM/yyyy HH:mm:ss'))
 
     if (current >= newQuotaStart && current <= newQuotaEnd) {
+      if(cronsObj?.newQuota) cronsObj.newQuota?.stop();
       cronsObj.newQuota = cron.schedule(newQuotaCronStr.value, execNewQuotas, { scheduled: true })
       cronsObj.newQuota.start();
     } else {
@@ -125,6 +126,7 @@ cron.schedule(CRON_STR, async function () {
         type: 'FIND_SCHEDULES'
       }).toArray();
     if (trxs?.length>0) {
+      if(cronsObj?.findSchedules) cronsObj.findSchedules?.stop()
       cronsObj.findSchedules = cron.schedule(findSchedulesCronStr.value, execFindSchedules, { scheduled: true })
       cronsObj.findSchedules.start();
     } else {
