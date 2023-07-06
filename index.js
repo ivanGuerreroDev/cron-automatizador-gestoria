@@ -1,10 +1,10 @@
 const cron = require("node-cron");
 const express = require("express");
-const { parse, addHours, addMinutes } = require("date-fns");
+const { parse, addHours, addMinutes,addDays, addMonths, format } = require("date-fns");
 const axios = require('axios');
 const clientPromise = require("./mongodb");
 const HOST_URL = process.env.HOST_URL || "http://localhost:3000";
-const CRON_STR = process.env.CRON_STR || '*/30 * * * *'
+const CRON_STR = process.env.CRON_STR || '*/30 * * * * *'
 app = express();
 
 const execFindSchedules = async () => {
@@ -97,8 +97,10 @@ cron.schedule(CRON_STR, async function () {
   const newQuotaDuration = await db.collection("settings").findOne({ key: 'newQuotaDuration' });
   const newQuotaDurationType = await db.collection("settings").findOne({ key: 'newQuotaDurationType' });
   const current = new Date();
-  const newQuotaStart = parse(newQuotaStartTime.value, 'HH:mm', current);
-  let newQuotaEnd = parse(newQuotaStartTime.value, 'HH:mm', current);
+  console.log("current", format(current, "hh:mm:ss b dd/LL/yyyy O"))
+  const newQuotaStart = parse(newQuotaStartTime.value, 'HH', current);
+  console.log("newQuotaStart", format(newQuotaStart, "hh:mm:ss b dd/LL/yyyy O"))
+  let newQuotaEnd = parse(newQuotaStartTime.value, 'HH', current);
   switch (newQuotaDurationType.value) {
     case 'HOURS':
       newQuotaEnd = addHours(newQuotaEnd, newQuotaDuration.value);
@@ -109,8 +111,6 @@ cron.schedule(CRON_STR, async function () {
     default:
       break;
   }
-  console.log("@@ current ", current)
-  console.log("@@addDays(addMonths(current, newQuotaHowMany), 1 ", addDays(addMonths(current, newQuotaHowMany), 1))
   if (current >= newQuotaStart && current <= newQuotaEnd) {
     console.log("New Quota Start: " + newQuotaStart + " End: " + newQuotaEnd);
     cronsObj.newQuota = cron.schedule(newQuotaCronStr.value, execNewQuotas, { scheduled: true })
