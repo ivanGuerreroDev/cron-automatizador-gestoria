@@ -99,9 +99,9 @@ cron.schedule(CRON_STR, async function () {
     const newQuotaDurationType = await db.collection("settings").findOne({ key: 'newQuotaDurationType' });
     const current = new Date();
     console.log("current", format(current, "hh:mm:ss b dd/LL/yyyy O"))
-    const newQuotaStart = parse(newQuotaStartTime.value, 'hh', current);
+    const newQuotaStart = parse(newQuotaStartTime.value, 'H', current);
     console.log("newQuotaStart", format(newQuotaStart, "hh:mm:ss b dd/LL/yyyy O"))
-    let newQuotaEnd = parse(newQuotaStartTime.value, 'hh', current);
+    let newQuotaEnd = parse(newQuotaStartTime.value, 'H', current);
     switch (newQuotaDurationType.value) {
       case 'HOURS':
         newQuotaEnd = addHours(newQuotaEnd, newQuotaDuration.value);
