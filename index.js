@@ -1,6 +1,6 @@
 const cron = require("node-cron");
 const express = require("express");
-const { parse, addHours, addMinutes,addDays, addMonths, format } = require("date-fns");
+const { parse, addHours, addMinutes, addDays, addMonths, format } = require("date-fns");
 const axios = require('axios');
 const clientPromise = require("./mongodb");
 const HOST_URL = process.env.HOST_URL || "http://localhost:3000";
@@ -88,51 +88,56 @@ const execNewQuotas = async () => {
 const cronsObj = {}
 
 cron.schedule(CRON_STR, async function () {
-  console.log("running a task")
-  const client = await clientPromise;
-  const db = client.db("saime-citas");
-  const findSchedulesCronStr = await db.collection("settings").findOne({ key: 'findSchedulesCronStr' });
-  const newQuotaCronStr = await db.collection("settings").findOne({ key: 'newQuotaCronStr' });
-  const newQuotaStartTime = await db.collection("settings").findOne({ key: 'newQuotaStartTime' });
-  const newQuotaDuration = await db.collection("settings").findOne({ key: 'newQuotaDuration' });
-  const newQuotaDurationType = await db.collection("settings").findOne({ key: 'newQuotaDurationType' });
-  const current = new Date();
-  console.log("current", format(current, "hh:mm:ss b dd/LL/yyyy O"))
-  const newQuotaStart = parse(newQuotaStartTime.value, 'HH', current);
-  console.log("newQuotaStart", format(newQuotaStart, "hh:mm:ss b dd/LL/yyyy O"))
-  let newQuotaEnd = parse(newQuotaStartTime.value, 'HH', current);
-  switch (newQuotaDurationType.value) {
-    case 'HOURS':
-      newQuotaEnd = addHours(newQuotaEnd, newQuotaDuration.value);
-      break;
-    case 'MINUTES':
-      newQuotaEnd = addMinutes(newQuotaEnd, newQuotaDuration.value);
-      break;
-    default:
-      break;
+  try {
+    console.log("running a task")
+    const client = await clientPromise;
+    const db = client.db("saime-citas");
+    const findSchedulesCronStr = await db.collection("settings").findOne({ key: 'findSchedulesCronStr' });
+    const newQuotaCronStr = await db.collection("settings").findOne({ key: 'newQuotaCronStr' });
+    const newQuotaStartTime = await db.collection("settings").findOne({ key: 'newQuotaStartTime' });
+    const newQuotaDuration = await db.collection("settings").findOne({ key: 'newQuotaDuration' });
+    const newQuotaDurationType = await db.collection("settings").findOne({ key: 'newQuotaDurationType' });
+    const current = new Date();
+    console.log("current", format(current, "hh:mm:ss b dd/LL/yyyy O"))
+    const newQuotaStart = parse(newQuotaStartTime.value, 'HH', current);
+    console.log("newQuotaStart", format(newQuotaStart, "hh:mm:ss b dd/LL/yyyy O"))
+    let newQuotaEnd = parse(newQuotaStartTime.value, 'HH', current);
+    switch (newQuotaDurationType.value) {
+      case 'HOURS':
+        newQuotaEnd = addHours(newQuotaEnd, newQuotaDuration.value);
+        break;
+      case 'MINUTES':
+        newQuotaEnd = addMinutes(newQuotaEnd, newQuotaDuration.value);
+        break;
+      default:
+        break;
+    }
+    if (current >= newQuotaStart && current <= newQuotaEnd) {
+      console.log("New Quota Start: " + newQuotaStart + " End: " + newQuotaEnd);
+      cronsObj.newQuota = cron.schedule(newQuotaCronStr.value, execNewQuotas, { scheduled: true })
+      cronsObj.newQuota.start();
+    } else {
+      console.log("New Quota stopped");
+      if (cronsObj?.newQuota) cronsObj.newQuota?.stop();
+    }
+    const trxs = await db
+      .collection("trxs")
+      .find({
+        status: 'PENDING',
+        type: 'FIND_SCHEDULES'
+      }).toArray();
+    if (trxs) {
+      console.log("Find Schedules started - finded " + trxs.length + " trxs");
+      cronsObj.findSchedules = cron.schedule(findSchedulesCronStr.value, execFindSchedules, { scheduled: true })
+      cronsObj.findSchedules.start();
+    } else {
+      console.log("Find Schedules stopped");
+      if (cronsObj?.findSchedules) cronsObj.findSchedules?.stop();
+    }
+  } catch (error) {
+    console.log(error)
   }
-  if (current >= newQuotaStart && current <= newQuotaEnd) {
-    console.log("New Quota Start: " + newQuotaStart + " End: " + newQuotaEnd);
-    cronsObj.newQuota = cron.schedule(newQuotaCronStr.value, execNewQuotas, { scheduled: true })
-    cronsObj.newQuota.start();
-  } else {
-    console.log("New Quota stopped");
-    if (cronsObj?.newQuota) cronsObj.newQuota?.stop();
-  }
-  const trxs = await db
-    .collection("trxs")
-    .find({
-      status: 'PENDING',
-      type: 'FIND_SCHEDULES'
-    }).toArray();
-  if (trxs) {
-    console.log("Find Schedules started - finded " + trxs.length + " trxs");
-    cronsObj.findSchedules = cron.schedule(findSchedulesCronStr.value, execFindSchedules, { scheduled: true })
-    cronsObj.findSchedules.start();
-  } else {
-    console.log("Find Schedules stopped");
-    if (cronsObj?.findSchedules) cronsObj.findSchedules?.stop();
-  }
+
 });
 
 app.listen(3128);
