@@ -15,11 +15,9 @@ const execFindSchedules = async () => {
     const trxs = await db
       .collection("trxs")
       .find(query).toArray();
-    console.log("Find Schedules - Trxs: " + trxs?.length);
     if (trxs?.length > 0) {
       trxs.forEach(schedules => {
         schedules?.offices?.forEach(office => {
-          console.log("execFindSchedules Cedula: " + schedules.dni + " Oficina: " + office.name + " Dates: " + schedules.dates[0] + "-" + schedules.dates[schedules.dates.length - 1]);
           const config = {
             method: 'post',
             url: `${HOST_URL}/api/agendarCitasGlobal`,
@@ -71,7 +69,6 @@ const execNewQuotas = async () => {
               office: office.id,
             })
           }
-          console.log("New Quota Cedula: " + schedules.dni + " Oficina: " + office.name);
           axios(config)
             .then(function (response) {
               console.log(schedules.dni + " " + JSON.stringify(response.data));
@@ -98,9 +95,7 @@ cron.schedule(CRON_STR, async function () {
     const newQuotaDuration = await db.collection("settings").findOne({ key: 'newQuotaDuration' });
     const newQuotaDurationType = await db.collection("settings").findOne({ key: 'newQuotaDurationType' });
     const current = new Date();
-    console.log("current", format(current, "hh:mm:ss b dd/LL/yyyy O"))
     const newQuotaStart = parse(newQuotaStartTime.value, 'H', current);
-    console.log("newQuotaStart", format(newQuotaStart, "hh:mm:ss b dd/LL/yyyy O"))
     let newQuotaEnd = parse(newQuotaStartTime.value, 'H', current);
     switch (newQuotaDurationType.value) {
       case 'HOURS':
@@ -112,10 +107,7 @@ cron.schedule(CRON_STR, async function () {
       default:
         break;
     }
-    console.log("newQuotaEnd", format(newQuotaEnd, "hh:mm:ss b dd/LL/yyyy O"))
-
     if (current >= newQuotaStart && current <= newQuotaEnd) {
-      console.log("New Quota Start: " + newQuotaStart + " End: " + newQuotaEnd);
       cronsObj.newQuota = cron.schedule(newQuotaCronStr.value, execNewQuotas, { scheduled: true })
       cronsObj.newQuota.start();
     } else {
@@ -129,7 +121,6 @@ cron.schedule(CRON_STR, async function () {
         type: 'FIND_SCHEDULES'
       }).toArray();
     if (trxs?.length>0) {
-      console.log("Find Schedules started - finded " + trxs.length + " trxs");
       cronsObj.findSchedules = cron.schedule(findSchedulesCronStr.value, execFindSchedules, { scheduled: true })
       cronsObj.findSchedules.start();
     } else {
