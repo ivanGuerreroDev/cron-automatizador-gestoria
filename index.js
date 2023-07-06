@@ -74,7 +74,7 @@ const execNewQuotas = async () => {
           console.log("New Quota Cedula: " + schedules.dni + " Oficina: " + office.name);
           axios(config)
             .then(function (response) {
-              console.log(schedules.dni + " " + response.data);
+              console.log(schedules.dni + " " + JSON.stringify(response.data));
             }).catch(function (error) {
               console.log(error);
             });
