@@ -97,6 +97,8 @@ cron.schedule(CRON_STR, async function () {
     const current = new Date();
     const newQuotaStart = parse(newQuotaStartTime.value, 'H', current);
     let newQuotaEnd = parse(newQuotaStartTime.value, 'H', current);
+    console.log("current", format(current, 'dd/MM/yyyy HH:mm:ss'))
+    console.log("newQuotaStart", format(newQuotaStart, 'dd/MM/yyyy HH:mm:ss'))
     switch (newQuotaDurationType.value) {
       case 'HOURS':
         newQuotaEnd = addHours(newQuotaEnd, newQuotaDuration.value);
@@ -107,6 +109,8 @@ cron.schedule(CRON_STR, async function () {
       default:
         break;
     }
+    console.log("newQuotaEnd", format(newQuotaEnd, 'dd/MM/yyyy HH:mm:ss'))
+
     if (current >= newQuotaStart && current <= newQuotaEnd) {
       cronsObj.newQuota = cron.schedule(newQuotaCronStr.value, execNewQuotas, { scheduled: true })
       cronsObj.newQuota.start();
@@ -131,6 +135,12 @@ cron.schedule(CRON_STR, async function () {
     console.log(error)
   }
 
+});
+
+app.use(express.json());
+
+app.get('/', function(request, response){    // your JSON
+   response.send('Everything ok');    // echo the result back
 });
 
 app.listen(3128);
