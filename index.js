@@ -119,6 +119,7 @@ cron.schedule(CRON_STR, async function () {
     console.log("newQuotaEnd", format(newQuotaEnd, 'dd/MM/yyyy HH:mm:ss'))
     if (caracasDate >= newQuotaStart && caracasDate <= newQuotaEnd) {
       if(cronsObj?.newQuota) cronsObj.newQuota?.stop();
+      console.log("New quota start")
       cronsObj.newQuota = cron.schedule(newQuotaCronStr.value, execNewQuotas, { scheduled: true })
       cronsObj.newQuota.start();
     } else {
