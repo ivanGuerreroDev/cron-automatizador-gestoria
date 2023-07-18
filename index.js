@@ -99,10 +99,7 @@ cron.schedule(CRON_STR, async function () {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const utcDate = zonedTimeToUtc(current, timeZone)
     const timeZoneDate = utcToZonedTime(utcDate, "America/Scoresbysund");
-    const newQuotaStart = parse(newQuotaStartTime.value, 'H', timeZoneDate);
-    if(parseInt(format(newQuotaStart, 'HH')) < 12){
-      newQuotaStart = subDays(newQuotaStart, 1);
-    }
+    let newQuotaStart = parse(newQuotaStartTime.value, 'H', timeZoneDate);
     let newQuotaEnd = parse(newQuotaStartTime.value, 'H', timeZoneDate);
     console.log("current", format(timeZoneDate, 'dd/MM/yyyy HH:mm:ss'))
     console.log("newQuotaStart", format(newQuotaStart, 'dd/MM/yyyy HH:mm:ss'))
