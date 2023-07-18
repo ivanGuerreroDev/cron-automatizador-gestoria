@@ -98,13 +98,13 @@ cron.schedule(CRON_STR, async function () {
     const current = new Date();
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const utcDate = zonedTimeToUtc(current, timeZone)
-    const caracasDate = utcToZonedTime(utcDate, "America/Caracas");
-    const newQuotaStart = parse(newQuotaStartTime.value, 'H', caracasDate);
+    const timeZoneDate = utcToZonedTime(utcDate, "America/Scoresbysund");
+    const newQuotaStart = parse(newQuotaStartTime.value, 'H', timeZoneDate);
     if(parseInt(format(newQuotaStart, 'HH')) < 12){
       newQuotaStart = subDays(newQuotaStart, 1);
     }
-    let newQuotaEnd = parse(newQuotaStartTime.value, 'H', caracasDate);
-    console.log("current", format(caracasDate, 'dd/MM/yyyy HH:mm:ss'))
+    let newQuotaEnd = parse(newQuotaStartTime.value, 'H', timeZoneDate);
+    console.log("current", format(timeZoneDate, 'dd/MM/yyyy HH:mm:ss'))
     console.log("newQuotaStart", format(newQuotaStart, 'dd/MM/yyyy HH:mm:ss'))
     switch (newQuotaDurationType.value) {
       case 'HOURS':
@@ -117,7 +117,7 @@ cron.schedule(CRON_STR, async function () {
         break;
     }
     console.log("newQuotaEnd", format(newQuotaEnd, 'dd/MM/yyyy HH:mm:ss'))
-    if (caracasDate >= newQuotaStart && caracasDate <= newQuotaEnd) {
+    if (timeZoneDate >= newQuotaStart && timeZoneDate <= newQuotaEnd) {
       if(cronsObj?.newQuota) cronsObj.newQuota?.stop();
       console.log("New quota start")
       cronsObj.newQuota = cron.schedule(newQuotaCronStr.value, execNewQuotas, { scheduled: true })
